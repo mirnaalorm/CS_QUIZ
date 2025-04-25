@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CS Suitability Quiz</title>
+  <style>
+    /* ==== Base Reset and Body Styling ==== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      background: url('background.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      backdrop-filter: blur(3px);
+    }
+
+    /* ==== Header ==== */
+    .quiz-title {
+      font-size: 4rem;
+      font-weight: bold;
+      color: #1f2a48;
+      margin-bottom: 20px;
+      text-align: center;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 16px;
+    }
+
+    /* ==== Card Container ==== */
+    .question-card {
+      background-color: #1f2a48; /* Dark card */
+      color: #fff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      width: 100%;
+      max-width: 700px;
+      text-align: center;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    /* ==== Question / Answer ==== */
+    #question {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      background-color: #f4f6fb; /* Dark card */
+      color: #1f2a48; /* Dark card */
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      width: 100%;
+      max-width: 700px;
+      text-align: center;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    #answer {
+      font-size: 1rem;
+      color: #c7d2fe;
+      margin-bottom: 1.5rem;
+    }
+
+    #progress {
+      font-size: 0.9rem;
+      color: #d3d3d3;
+      margin-top: 10px;
+    }
+
+    /* ==== Buttons ==== */
+    button {
+      padding: 10px 25px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #4c6ef5;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #3b5bdb;
+      transform: scale(1.05);
+    }
+
+    button.disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+
+    /* ==== Result Section ==== */
+    #result {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #1f2a48;
+      animation: fadeIn 1s ease-in;
+    }
+
+    /* ==== Animations ==== */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="quiz-title">Will Computer Science Major Suit My Interests?</div>
+
+  <!-- Quiz Card -->
+  <div class="question-card fade-in">
+    <div id="question">Loading question...</div>
+    <div id="answer" style="margin-top: 15px;"></div>
+    <button id="yesBtn" class="button">Yes</button>
+    <button id="noBtn" class="button">No</button>
+    <button id="nextBtn" class="button" style="display: none;">Next</button>
+    <div id="progress"></div>
+  </div>
+
+  <!-- Final Result -->
+  <div id="result" class="fade-in"></div>
+
+  <script>
+    const questions = [
+      { text: "💡  Am I curious about how things work behind the scenes?", answer: "CS involves understanding how software and hardware work together. If you like taking things apart to see how they function, this field will engage you." },
+      { text: "⌨️  Would I enjoy creating something from scratch using code?", answer: "Whether it's building a game, app, or website, CS allows you to turn ideas into reality through programming." },
+      { text: "📚  Am I ready to keep learning even after graduation?", answer: "Technology evolves rapidly. A passion for lifelong learning is crucial in CS to stay current with new tools, languages, and trends." },
+      { text: "🧑‍🤝‍🧑 Do I like working independently and also collaborating in teams?", answer: "CS projects often require both solo effort (like coding) and teamwork (like planning, testing, and presenting)." },
+      { text: "⏳ Can I stay focused and patient when things don’t work right away?", answer: "Debugging and trial-and-error are big parts of coding. Patience and persistence go a long way." },
+      { text: "🎯  Am I comfortable with failure as a part of the learning process?", answer: "You’ll encounter errors and bugs often. Viewing failure as feedback is key to growth in CS." },
+      { text: "🛠️  Do I like learning how to use new tools or software?", answer: "CS involves using IDEs, frameworks, version control (like Git), and more. Enjoying hands-on exploration is helpful." },
+      { text: "🌐 Do I want to impact the world through technology?", answer: "From education to health, CS can be applied to solve real-world problems. Your work can have a meaningful impact." },
+      { text: "🏁  What is my motivation for choosing CS?", answer: "Is it job security, high salary, genuine interest, or influence from others? Knowing your 'why' helps you stay focused and passionate." },
+      { text: "🖼️ Do I have a creative side I want to express through technology?", answer: "Programming isn’t just logical — it can also be a creative outlet, especially in design, games, and media." },
+      { text: "🔒 Am I interested in security, privacy, and ethical use of technology?", answer: "CS isn’t just about building things — it’s about building them responsibly." },
+      { text: "🧪 Do I like experimenting and testing different approaches to see what works best?", answer: "In CS, there’s rarely one “right” way — experimentation often leads to innovation." },
+      { text: "🧭 Am I okay with not always knowing the answer and figuring things out as I go?", answer: "Much of CS is exploring, researching, and learning on the fly." },
+      { text: "🧑‍🏫 Would I enjoy teaching or explaining tech concepts to others?", answer: "Teaching is a huge part of CS — from documentation to mentoring to presentations." },
+      { text: "📈 Am I interested in data, patterns, and how they can be used to make decisions?", answer: "Fields like data science, machine learning, and AI thrive on this." },
+      { text: "🧠 Am I fascinated by how machines can mimic human intelligence?", answer: "AI is all about enabling machines to learn, reason, and make decisions like (or better than) humans." },
+      { text: "👁️‍🗨️ Am I curious how systems like ChatGPT, self-driving cars, or facial recognition actually work?", answer: "If these technologies intrigue you, AI might be your thing." },
+      { text: "🛠️ Do I want to build smart systems that can adapt and learn over time?", answer: "That’s what machine learning and AI allow you to do." },
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let yesCount = 0;
+
+    const questionEl = document.getElementById("question");
+    const answerEl = document.getElementById("answer");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const resultEl = document.getElementById("result");
+    const progressEl = document.getElementById("progress");
+
+    function showQuestion() {
+      const q = questions[currentQuestion];
+      questionEl.textContent = q.text;
+      answerEl.textContent = q.answer;
+      progressEl.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+      enableButtons();
+    }
+
+    function showFeedback(msg) {
+      const feedback = document.createElement("p");
+      feedback.textContent = msg;
+      answerEl.appendChild(feedback);
+    }
+
+    function nextQuestion() {
+      if (currentQuestion < questions.length-1) {
+        currentQuestion++;
+        answerEl.innerHTML = "";
+        nextBtn.style.display = "none";
+        showQuestion();
+      } else {
+        calculateResult();  // Call the new function to calculate and show the result
+      }
+    }
+
+    function calculateResult() {
+      // Calculate the percentage of Yes answers
+      const percentage = (yesCount / questions.length) * 100;
+
+      // Determine the result message based on the percentage
+      let message = '';
+      if (percentage >= 80) {
+        message = "✅ Great fit for Computer Science!";
+      } else if (percentage >= 50) {
+        message = "🤔 You're somewhat aligned. Explore CS more before deciding.";
+      } else {
+        message = "❌ CS may not be the perfect fit — but keep exploring your options!";
+      }
+
+      // Show the result message
+      resultEl.innerHTML = `<h2>Your CS Suitability Score: ${Math.round(percentage)}%</h2><p>${message}</p>`;
+      questionEl.textContent = "Quiz Completed!";
+      answerEl.innerHTML = "";
+      yesBtn.style.display = "none";
+      noBtn.style.display = "none";
+      nextBtn.style.display = "none";
+    }
+
+    yesBtn.onclick = function () {
+      yesCount++;
+      showFeedback("Great! That’s a good sign.");
+      disableButtons();
+      nextBtn.style.display = "inline-block";
+    };
+
+    noBtn.onclick = function () {
+      showFeedback("That’s okay! Not everyone starts with all the traits.");
+      disableButtons();
+      nextBtn.style.display = "inline-block";
+    };
+
+    nextBtn.onclick = function () {
+      nextQuestion();
+    };
+
+    function disableButtons() {
+      yesBtn.disabled = true;
+      noBtn.disabled = true;
+      yesBtn.classList.add("disabled");
+      noBtn.classList.add("disabled");
+    }
+
+    function enableButtons() {
+      yesBtn.disabled = false;
+      noBtn.disabled = false;
+      yesBtn.classList.remove("disabled");
+      noBtn.classList.remove("disabled");
+    }
+
+    showQuestion();
+</script>
+
+</body>
+</html>
+    
